@@ -1,24 +1,31 @@
 'use strict';
-
-var koa = require('koa');
-var app = module.exports = koa();
+// 引入nodejs的普通请求和跨域请求模块
 var http = require('http');
+var cors = require('kcors');
+// 引入koa nodejs网络开发框架
+var koa = require('koa');
+// 引入一堆 基于koa的开源中间件
 var middlewares = require('koa-middlewares');
 var bodyParser = require('koa-bodyparser');
 var rt = require('koa-rt');
 var rewrite = require('koa-rewrite');
 var conditional = require('koa-conditional-get');
 var etag = require('koa-etag');
+var maxrequests = require('koa-maxrequests');
+// 引入一堆 registry 访问相关的路由配置
 var routes = require('../routes/registry');
-var logger = require('../common/logger');
+// 引入配置文件
 var config = require('../config');
+
 var block = require('../middleware/block');
 var auth = require('../middleware/auth');
 var staticCache = require('../middleware/static');
 var notFound = require('../middleware/registry_not_found');
-var cors = require('kcors');
 var proxyToNpm = require('../middleware/proxy_to_npm');
-var maxrequests = require('koa-maxrequests');
+// 引入日志处理模块
+var logger = require('../common/logger');
+
+var app = module.exports = koa();
 
 app.use(maxrequests());
 app.use(block());
@@ -42,18 +49,11 @@ if (config.enableCompress) {
 }
 app.use(conditional());
 app.use(etag());
-
-/**
- * Routes
- */
-
+// 配置路由
 app.use(middlewares.router(app));
 routes(app);
 
-/**
- * Error handler
- */
-
+// 错误处理
 app.on('error', function (err, ctx) {
   console.log(err);
   console.log(err.stack);
@@ -62,7 +62,7 @@ app.on('error', function (err, ctx) {
 });
 
 app = http.createServer(app.callback());
-
+// 如果为空
 if (!module.parent) {
   app.listen(config.registryPort);
 }

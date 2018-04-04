@@ -1,10 +1,11 @@
 "use strict";
-// Only support for ./services/DefaultUserService. If you use custom user service, ignore this file.
-// call with:
-// $ node ./bin/change_password.js 'username' 'new_password'
+// 仅支持默认的用户账号体系，如果使用公司自有账号体系，忽略本文件
+// 使用 node ./bin/change_password.js 'username' 'new_password' 修改密码
 
 var UserModel = require('../models').User;
+// 优雅处理回调函数的库
 var co = require('co');
+// 一堆有用的node工具库，加解密等
 var utility = require('utility');
 
 var username = process.argv[2];

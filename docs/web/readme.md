@@ -1,12 +1,6 @@
-# 易鑫前端内部私有源
+# 易鑫前端NPM仓库
 
-
-## 注册
-
-- Our public registry: [r.cnpmjs.org](https://r.cnpmjs.org), syncing from [registry.npmjs.com](https://registry.npmjs.com)
-- [cnpmjs.org](/) version: <span id="app-version"></span>
-- [Node.js](https://nodejs.org) version: <span id="node-version"></span>
-- For developers in China, please visit [the China mirror](https://npm.taobao.org). 中国用户请访问[国内镜像站点](https://npm.taobao.org)。
+## 统计概况
 
 <div class="ant-table">
 <table class="downloads">
@@ -31,7 +25,7 @@
 </div>
 
 <div class="sync" style="display:none;">
-  <h3>Sync Status</h3>
+  <h3>同步npm源的情况</h3>
   <p id="sync-model"></p>
   <p>Last sync time is <span id="last-sync-time"></span>. </p>
   <div class="ant-alert ant-alert-info syncing">
@@ -58,54 +52,7 @@
 
 <script src="/js/readme.js"></script>
 
-## Badges
-
-Default style is `flat-square`.
-
-### Version
-
-Badge URL: `https://cnpmjs.org/badge/v/cnpmjs.org.svg` ![cnpmjs.org-version-badge](//cnpmjs.org/badge/v/cnpmjs.org.svg)
-
-* `<0.1.0 & >=0.0.0`: ![red-badge](https://img.shields.io/badge/cnpm-0.0.1-red.svg?style=flat-square)
-* `<1.0.0 & >=0.1.0`: ![red-badge](https://img.shields.io/badge/cnpm-0.1.0-green.svg?style=flat-square)
-* `>=1.0.0`: ![red-badge](https://img.shields.io/badge/cnpm-1.0.0-blue.svg?style=flat-square)
-
-### Downloads
-
-Badge URL: `https://cnpmjs.org/badge/d/cnpmjs.org.svg` ![cnpmjs.org-download-badge](//cnpmjs.org/badge/d/cnpmjs.org.svg)
-
-## Usage
-
-use our npm client [cnpm](https://github.com/cnpm/cnpm)(More suitable with cnpmjs.org and gzip support), you can get our client through npm:
-
-```bash
-$ npm install -g cnpm --registry=https://registry.npm.taobao.org
-```
-
-Or you can alias NPM to use it:
-
-```bash
-alias cnpm="npm --registry=https://registry.npm.taobao.org \
---cache=$HOME/.npm/.cache/cnpm \
---disturl=https://npm.taobao.org/mirrors/node \
---userconfig=$HOME/.cnpmrc"
-
-#Or alias it in .bashrc or .zshrc
-$ echo '\n#alias for cnpm\nalias cnpm="npm --registry=https://registry.npm.taobao.org \
-  --cache=$HOME/.npm/.cache/cnpm \
-  --disturl=https://npm.taobao.org/mirrors/node \
-  --userconfig=$HOME/.cnpmrc"' >> ~/.zshrc && source ~/.zshrc
-```
-
-### install
-
-Install package from [r.cnpmjs.org](//r.cnpmjs.org). When installing a package or version does not exist, it will try to install from the official registry([registry.npmjs.org](https://registry.npmjs.org)), and sync this package to cnpm in the backend.
-
-```bash
-$ cnpm install [name]
-```
-
-### sync
+### 和npm或淘宝源同步
 
 Only `cnpm` cli has this command. Meaning sync package from source npm.
 
@@ -113,41 +60,27 @@ Only `cnpm` cli has this command. Meaning sync package from source npm.
 $ cnpm sync connect
 ```
 
-sync package on web: [sync/connect](/sync/connect)
+## 如何使用
+一般我们通过浏览器去查看整个私有仓库的总体状况和搜索私有库的使用，通过终端去去下
+载安装，区别主要是端口号不同。
 
-```bash
-$ open http://registry.npm.taobao.org/sync/connect
-```
+### 浏览访问
+- 直接打开 http://192.168.155.25:7002/  访问即可
 
-### publish / unpublish
+### 发布包
+- 先全局安装cnpm: npm install -g cnpm --registry=https://registry.npm.taobao.org
+- 然后设置全局cnpm的registry：cnpm set registry http://192.168.155.25:7001
+- 然后登陆：cnpm login 分别输入用户名、密码和邮箱（第一次输入的密码即为初始密码>）
+- 进入你要发布包的目录如test：cd test
+- 然后输入： cnpm init 生成一个package.json文件，主要项目名必须为加 @yx/ 前缀，>如：@yx/test
+- 然后执行：cnpm publish, 成功后在浏览器端就能看到
 
-Only `admin` user can publish / unpublish package to private registry.
+### 下载安装包
+- 设置cnpm的registry：cnpm set registry http://192.168.155.25:7001
+- 或 install 时加上 --registry=http://192.168.155.25:7001
+- 然后cnpm install 包名，如：cnpm install @yxin/test
+- 然后在项目目录的node_modules下就会有@yx目录，所有的私有包都在里面
+- 也可以在项目的package.json文件添加依赖，如："@yx/test": "1.0.0", 后直接cnpm install
 
-```bash
-$ cnpm publish [name]
-$ cnpm unpublish [name]
-```
-
-### Other commands
-
-Support all the other npm commands. e.g.:
-
-```bash
-$ cnpm info cnpm
-```
-
-## TODO list
-
-@see Github [Issues](https://github.com/cnpm/cnpmjs.org/issues)
-
-## Histories
-
-Release [History](/history).
-
-## npmjs.org, cnpmjs.org and npm.taobao.org relation
-
-
-## Sponsors
-
-- [![阿里云](https://static.aliyun.com/images/www-summerwind/logo.gif)](http://click.aliyun.com/m/4288/) (2016.2 - now)
-- [![UCloud云计算](https://www.ucloud.cn/static/style/images/about/logo.png)](http://www.ucloud.cn?sem=sdk-CNPMJS) (2015.3 - 2016.3)
+## 之后任务
+   把项目用到的开源包逐渐发布到私有源进行独立维护。

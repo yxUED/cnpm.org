@@ -1,19 +1,26 @@
 'use strict';
-
+// Node.js 异步异常的处理与domain模块解析
 var graceful = require('graceful');
+// 引入提供源的服务器
 var registry = require('./servers/registry');
+// 引入支持 浏览器访问 的服务器
 var web = require('./servers/web');
-var logger = require('./common/logger');
+// 引入配置信息
 var config = require('./config');
+// 引入日志服务
+var logger = require('./common/logger');
 
+// 根据配置的端口和域 启动web和registry两个服务器
 registry.listen(config.registryPort, config.bindingHost);
 web.listen(config.webPort, config.bindingHost);
-
-console.log('[%s] [worker:%d] Server started, registry server listen at %s:%d, web listen at %s:%d, cluster: %s',
+// 在终端打印出服务器启动的有关信息
+console.log(
+  '[%s] [worker:%d] 服务器已经启动, 源服务器的端口为 %s:%d, web访问服务器为：%s:%d, cluster: %s',
   new Date(), process.pid,
   config.bindingHost, config.registryPort,
   config.bindingHost, config.webPort,
-  config.enableCluster);
+  config.enableCluster
+);
 
 graceful({
   server: [registry, web],

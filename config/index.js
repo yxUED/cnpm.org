@@ -9,6 +9,7 @@ var path = require('path');
 var fs = require('fs');
 var os = require('os');
 
+// 项目的版本号
 var version = require('../package.json').version;
 var root = path.dirname(__dirname);
 var dataDir = path.join(process.env.HOME || root, '.cnpmjs.org');
@@ -23,8 +24,8 @@ var config = {
   registryPort: 7001,
   // 浏览器访问的端口
   webPort: 7002,
-  // bindingHost: '127.0.0.1', // 开启的话只能本机访问
-
+  // 开启的话只能本机访问
+  // bindingHost: '127.0.0.1',
   // 调试模式：一些中间件可能不加载，并且会打印日志
   debug: process.env.NODE_ENV === 'development',
   // page mode, enable on development env
@@ -40,8 +41,7 @@ var config = {
   // web page viewCache
   viewCache: false,
 
-  // config for koa-limit middleware
-  // for limit download rates
+  // koa-limit 中间件 限制下载速度的配置
   limit: {
     enable: false,
     token: 'koa-limit:download',
@@ -51,9 +51,8 @@ var config = {
     blackList: [],
     message: 'request frequency limited, any question, please contact fengmk2@gmail.com',
   },
-
-  enableCompress: false, // enable gzip response or not
-
+  // 是否开启 压缩返回 的数据
+  enableCompress: false,
   // 默认系统管理员
   admins: {
     // name: email
@@ -74,10 +73,10 @@ var config = {
   // 用浏览器访问时的logo图片
   logoURL: 'https://os.alipayobjects.com/rmsportal/oygxuIUkkrRccUz.jpg',
   adBanner: '',
-  customReadmeFile: '', // you can use your custom readme file instead the cnpm one
-  customFooter: '', // you can add copyright and site total script html here
-  npmClientName: 'cnpm', // use `${name} install package`
-  packagePageContributorSearch: true, // package page contributor link to search, default is true
+  customReadmeFile: '', // 自我定制Readme 的路径
+  customFooter: '', // web访问时底部的信息
+  npmClientName: 'cnpm', // 使用的客户端，也可以用 npm
+  packagePageContributorSearch: true, // 包的主页是否调整到搜索页
 
   // 最大的依赖
   maxDependencies: 200,
@@ -95,8 +94,7 @@ var config = {
     // 数据库的端口
     port: 3306,
 
-    // use pooling in order to reduce db connection overload and to increase speed
-    // currently only for mysql and postgresql (since v1.5.0)
+    // 使用数据库连接池 进行负载均衡和提高速度，目前仅支持mysql 和 postgresql
     pool: {
       maxConnections: 10,
       minConnections: 0,
@@ -108,73 +106,49 @@ var config = {
     logging: !!process.env.SQL_DEBUG,
   },
 
-  // package tarball store in local filesystem by default
+  // 默认本地文件系统的打包工具
   nfs: require('fs-cnpm')({
     dir: path.join(dataDir, 'nfs')
   }),
-  // if set true, will 302 redirect to `nfs.url(dist.key)`
+  // 如果为true, 302 将重定向到 `nfs.url(dist.key)`
   downloadRedirectToNFS: false,
-
-  // registry url name
-  registryHost: 'r.cnpmjs.org',
-
-  // enable private mode or not
-  // private mode: only admins can publish, other users just can sync package from source npm
-  // public mode: all users can publish
+  // 一般注掉，否则安装就不会走 内部设置的源
+  // registryHost: 'r.cnpmjs.org',
+  // 为true时: 只有admins(管理组) 发布内部包, 普通用户只能从 npm 源同步包, false时，所有用户都可以发布包
   enablePrivate: false,
-
   // 设置企业内部库的范围
-  scopes: [ '@cnpm', '@cnpmtest', '@cnpm-test' ],
-
-  // some registry already have some private packages in global scope
-  // but we want to treat them as scoped private packages,
-  // so you can use this white list.
+  scopes: [ '@yx', '@yixin'],
+  // 有些包已经存在 官方源，但是我们希望把他们作为内部包
   privatePackages: [],
 
-  /**
-   * sync configs
-   */
-
-  // the official npm registry
-  // cnpm wont directly sync from this one
-  // but sometimes will request it for some package infomations
-  // please don't change it if not necessary
+  // 以下为同步官方源 包的设置
+  // 官方的 npm registry，一般不要改
   officialNpmRegistry: 'https://registry.npmjs.com',
   officialNpmReplicate: 'https://replicate.npmjs.com',
 
-  // sync source, upstream registry
-  // If you want to directly sync from official npm's registry
+  // 同步源, upstream registry 如果想直接从官方源同步
   // please drop them an email first
   sourceNpmRegistry: 'https://registry.npm.taobao.org',
-
-  // upstream registry is base on cnpm/cnpmjs.org or not
-  // if your upstream is official npm registry, please turn it off
+  // 如果 upstream 是官方源， 请设为false
   sourceNpmRegistryIsCNpm: true,
-
-  // if install return 404, try to sync from source registry
+  // 如果安装返回 404, 尝试去官方源同步
   syncByInstall: true,
 
-  // sync mode select
-  // none: do not sync any module, proxy all public modules from sourceNpmRegistry
-  // exist: only sync exist modules
-  // all: sync all modules
-  syncModel: 'none', // 'none', 'all', 'exist'
-
+  // 同步模式：none: 不同步任何的包 exist: 只同步已存在的模块 all: 全量同步
+  syncModel: 'none',
+  // 并发同步
   syncConcurrency: 1,
-  // sync interval, default is 10 minutes
+  // 默认10分钟自动 同步一次
   syncInterval: '10m',
 
-  // sync polular modules, default to false
-  // because cnpm can't auto sync tag change for now
-  // so we want to sync popular modules to ensure their tags
+  // 同步最受欢迎的包
   syncPopular: false,
   syncPopularInterval: '1h',
-  // top 100
   topPopular: 100,
 
-  // sync devDependencies or not, default is false
+  // 是否同步开发环境 下的依赖
   syncDevDependencies: false,
-  // try to remove all deleted versions from original registry
+  // 从 original registry 同步删除的版本
   syncDeletedVersions: true,
 
   // changes streaming sync
@@ -185,19 +159,12 @@ var config = {
   badgePrefixURL: 'https://img.shields.io/badge',
   badgeSubject: 'cnpm',
 
-  // custom user service, @see https://github.com/cnpm/cnpmjs.org/wiki/Use-Your-Own-User-Authorization
-  // when you not intend to ingegrate with your company's user system, then use null, it would
-  // use the default cnpm user system
+  // 是否启用 定制的用户账号体系，null默认使用本工程的
   userService: null,
-
-  // always-auth https://docs.npmjs.com/misc/config#always-auth
-  // Force npm to always require authentication when accessing the registry, even for GET requests.
+  // 强制 鉴权
   alwaysAuth: false,
-
-  // if you're behind firewall, need to request through http proxy, please set this
-  // e.g.: `httpProxy: 'http://proxy.mycompany.com:8080'`
+  // 如果有防火墙，则需要开启代理
   httpProxy: null,
-
   // snyk.io root url
   snykUrl: 'https://snyk.io',
 
