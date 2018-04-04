@@ -20,7 +20,7 @@ var syncPath = path.join(__dirname, 'sync');
 // + 多个worker进程多个HTTP应用服务器的架构
 console.log('启动 cnpmjs.org 中...\n \n启用多核: %s\n 管理组: %j\n 私有源前缀: %j\n Npm源: %s\n 同步方式: %s',
   config.enableCluster, config.admins, config.scopes, config.sourceNpmRegistry, config.syncModel);
-
+debugger
 // 判断是否开启集群 进行多核处理
 if (config.enableCluster) {
   forkWorker();
